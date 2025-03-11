@@ -52,42 +52,47 @@ sed -i "s|if (bind_user == 'REMOVED') {|if (bind_user == 'True') {|g" /www/serve
 ```
 
 -------
-注意：
-1、从宝塔面板7.7.0下载文件显示错误：
+注意： 
+
+**1、从宝塔面板7.7.0下载文件显示错误：**
 
 出错了，面板运行时发生错误！
 TypeError: send_file() got an unexpected keyword argument 'add_etags'
 ![image](https://github.com/user-attachments/assets/6f45ff11-b531-4ece-b42b-350e9c0cc5b3)
-
 原因：
-参数兼容性问题：在 Flask 2.x 版本中，send_file() 函数的参数更新，add_etags 参数不再使用。
-与较新 Flask 版本不兼容的代码中仍然使用了这个参数，导致函数调用失败。
+参数兼容性问题：在 Flask 2.x 版本中，send_file() 函数的参数更新，add_etags 参数不再使用。与较新 Flask 版本不兼容的代码中仍然使用了这个参数，导致函数调用失败。
 解决宝塔面板7.7.0 Flask 版本不正确导致下载文件报错，降级 Flask 版本：
-#查看当前版本
-btpip show flask
-#安装正确的版本（例如Flask 2.1.2）并重启面板
-btpip install -U Flask==2.1.2 && bt 1
 
-2、宝塔面板申请 SSL 证书时报错：Invalid version. The only valid version for X509Req is 0.
+查看当前版本
+```btpip show flask```
+安装正确的版本（例如Flask 2.1.2）并重启面板
+```btpip install -U Flask==2.1.2 && bt 1```
+
+**2、宝塔面板申请 SSL 证书时报错：Invalid version. The only valid version for X509Req is 0.**  
 原因是X仅支持版本0，由于错误地设置了不适用的版本号，导致申请失败，服务器端的X509Req 版本只支持 0，而宝塔默认的版本为2。
 解决方案：
 修改 /www/server/panel/class 中的 acme_v2.py 文件找到第973行，将X509Req.set_version(2) 修改为：X509Req.set_version(0) 再重启面板。
-或者执行一键替换命令和重启面板
-sed -i 's/X509Req.set_version(2)/X509Req.set_version(0)/g' /www/server/panel/class/acme_v2.py && bt 1
+或执行一键替换命令和重启面板
+  
+备份当前的acme_v2.py文件
+`cp /www/server/panel/class/acme_v2.py /www/server/panel/class/acme_v2.py.bak`
+修改文件及重启面板
+`sed -i 's/X509Req.set_version(2)/X509Req.set_version(0)/g' /www/server/panel/class/acme_v2.py && bt 1`
 
 
-3、打开宝塔 SSH 终端显示 连接丢失,正在尝试重新连接!或光标一直闪烁。
+**3、打开宝塔 SSH 终端显示 连接丢失,正在尝试重新连接!或光标一直闪烁。**
 问题原因：
 版本兼容性问题：较新版本的Flask和Werkzeug 改变了WebSocket 路由处理机制。
 由于路由机制改变，WebSocket 请求在默认情况下被误识别为普通 HTTP 请求。
 路由标记问题： WebSocket 端点需要通过 websocket=True 标记来显式区分。缺少必要标记导致 WebSocket 请求处理错误。
+
 解决方案：
-修改 /www/server/panel/class下面的flask_sockets.py文件将第78行
-self.url_map.add(Rule(rule, endpoint=f))修改为：self.url_map.add(Rule(rule, endpoint=f, websocket=True))
+`修改 /www/server/panel/class目录内的flask_sockets.py文件将第78行
+self.url_map.add(Rule(rule, endpoint=f))修改为：self.url_map.add(Rule(rule, endpoint=f, websocket=True))`
 或执行命令
-#备份ask_sockets.py文件
-cp /www/server/panel/class/flask_sockets.py /www/server/panel/class/flask_sockets.py.bak
-#修改文件重启面板
-sed -i 's/self.url_map.add(Rule(rule, endpoint=f))/self.url_map.add(Rule(rule, endpoint=f, websocket=True))/g' /www/server/panel/class/flask_sockets.py && bt 1
+备份ask_sockets.py文件
+`cp /www/server/panel/class/flask_sockets.py /www/server/panel/class/flask_sockets.py.bak`
+修改文件重启面板
+`sed -i 's/self.url_map.add(Rule(rule, endpoint=f))/self.url_map.add(Rule(rule, endpoint=f, websocket=True))/g' /www/server/panel/class/flask_sockets.py && bt 1`
 
 --------------------
