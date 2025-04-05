@@ -52,7 +52,8 @@ sed -i "s|if (bind_user == 'REMOVED') {|if (bind_user == 'True') {|g" /www/serve
 ```
 
 -------
-# 注意：推荐使用安装nginx1.24
+# 注意：
+推荐使用安装nginx1.24
 
 1，从宝塔面板7.7.0下载文件显示错误：
 
