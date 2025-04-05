@@ -52,7 +52,8 @@ sed -i "s|if (bind_user == 'REMOVED') {|if (bind_user == 'True') {|g" /www/serve
 ```
 
 -------
-# 注意：
+# 注意：推荐使用安装nginx1.24
+
 1，从宝塔面板7.7.0下载文件显示错误：
 
 出错了，面板运行时发生错误！
@@ -90,7 +91,7 @@ cp /www/server/panel/class/acme_v2.py /www/server/panel/class/acme_v2.py.bak
 sed -i 's/X509Req.set_version(2)/X509Req.set_version(0)/g' /www/server/panel/class/acme_v2.py && bt 1
 ```
 
-3，宝塔面板申请 SSL 证书时报错：Invalid version. The only valid version for X509Req is 0.打开宝塔 SSH 终端显示 连接丢失,正在尝试重新连接!或光标一直闪烁。
+3，打开宝塔 SSH 终端显示 连接丢失,正在尝试重新连接!或光标一直闪烁。
 
 问题原因：版本兼容性问题：较新版本的Flask和Werkzeug 改变了WebSocket 路由处理机制。由于路由机制改变，WebSocket 请求在默认情况下
 被误识别为普通 HTTP 请求。路由标记问题：WebSocket 端点需要通过 websocket=True 标记来显式区分。缺少必要标记导致 WebSocket 请求处理错误。
