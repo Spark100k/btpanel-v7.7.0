@@ -53,7 +53,7 @@ sed -i "s|if (bind_user == 'REMOVED') {|if (bind_user == 'True') {|g" /www/serve
 
 -------
 # 注意：
-推荐使用安装nginx1.24
+推荐使用安装nginx1.24。
 宝塔nginx 反代的站点 计划任务SSL证书续期失败问题，
 解决方法：先停止反代，申请证书启用后，开启反代。然后在站点修改-配置-找到#一键申请SSL证书验证目录相关设置 添加 root /www/wwwroot/域名;  点保存即可在到期前自动续期。 修改后如下：
 ```
